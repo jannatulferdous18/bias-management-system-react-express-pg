@@ -328,7 +328,22 @@ app.post("/admin/approve-bias", async (req, res) => {
       bias_id,
     ]);
 
-    // STEP 4: Clean up pending request
+    // STEP 4: Insert into dataset_list or model_list based on type
+    if (type === "Dataset") {
+      await db.query(
+        `INSERT INTO dataset_list (bias_id, dataset_name, version, domain)
+         VALUES ($1, $2, $3, $4)`,
+        [bias_id, name, dataset_algorithm_version, domain]
+      );
+    } else if (type === "Algorithm") {
+      await db.query(
+        `INSERT INTO model_list (bias_id, model_name, version, domain)
+         VALUES ($1, $2, $3, $4)`,
+        [bias_id, name, dataset_algorithm_version, domain]
+      );
+    }
+
+    // STEP 5: Clean up pending request
     await db.query(`DELETE FROM pending_request WHERE request_id = $1`, [id]);
 
     res.json({ success: true, message: "Bias approved and added." });
@@ -465,7 +480,19 @@ app.post("/api/biases/admin", async (req, res) => {
       newStrategyId,
       newBiasId,
     ]);
-
+    if (type === "Dataset") {
+      await db.query(
+        `INSERT INTO dataset_list (bias_id, dataset_name, version, domain)
+         VALUES ($1, $2, $3, $4)`,
+        [newBiasId, name, dataset_algorithm_version, domain]
+      );
+    } else if (type === "Algorithm") {
+      await db.query(
+        `INSERT INTO model_list (bias_id, model_name, version, domain)
+         VALUES ($1, $2, $3, $4)`,
+        [newBiasId, name, dataset_algorithm_version, domain]
+      );
+    }
     res.status(201).json({
       success: true,
       message: "Bias submitted successfully",
@@ -589,6 +616,49 @@ app.put("/admin/biases/:id", async (req, res) => {
         `UPDATE biases SET mitigation_id = $1 WHERE bias_id = $2`,
         [newMitigationId, id]
       );
+    }
+
+    // Update or insert into dataset_list or model_list
+    if (type === "Dataset") {
+      const datasetCheck = await db.query(
+        `SELECT * FROM dataset_list WHERE bias_id = $1`,
+        [id]
+      );
+
+      if (datasetCheck.rows.length > 0) {
+        await db.query(
+          `UPDATE dataset_list 
+           SET dataset_name = $1, version = $2, domain = $3 
+           WHERE bias_id = $4`,
+          [name, dataset_algorithm_version, domain, id]
+        );
+      } else {
+        await db.query(
+          `INSERT INTO dataset_list (bias_id, dataset_name, version, domain) 
+           VALUES ($1, $2, $3, $4)`,
+          [id, name, dataset_algorithm_version, domain]
+        );
+      }
+    } else if (type === "Algorithm") {
+      const modelCheck = await db.query(
+        `SELECT * FROM model_list WHERE bias_id = $1`,
+        [id]
+      );
+
+      if (modelCheck.rows.length > 0) {
+        await db.query(
+          `UPDATE model_list 
+           SET model_name = $1, version = $2, domain = $3 
+           WHERE bias_id = $4`,
+          [name, dataset_algorithm_version, domain, id]
+        );
+      } else {
+        await db.query(
+          `INSERT INTO model_list (bias_id, model_name, version, domain) 
+           VALUES ($1, $2, $3, $4)`,
+          [id, name, dataset_algorithm_version, domain]
+        );
+      }
     }
 
     res.json({ success: true, message: "Bias updated successfully." });
