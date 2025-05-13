@@ -30,17 +30,24 @@ const SignInSide: React.FC = () => {
       if (res.data.success) {
         const user = res.data.user || res.data.users;
         setAuthUser({ user_name: user.user_name, user_id: user.user_id });
-        if (user.user_name === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/user");
-        }
+        navigate(user.user_name === "admin" ? "/admin" : "/user");
       } else {
-        setError(res.data.message || "Login failed");
+        const msg = res.data.message?.toLowerCase();
+        if (msg === "invalid credentials") {
+          setError("Password wrong, try again.");
+        } else {
+          setError(res.data.message || "Login failed.");
+        }
       }
     } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.message || "Server error. Try again.");
+      const status = err.response?.status;
+      const msg = err.response?.data?.message;
+
+      if (status === 401 && msg === "Invalid credentials") {
+        setError("Password wrong, try again.");
+      } else {
+        setError(msg || "Server error. Try again.");
+      }
     }
   };
 
@@ -58,9 +65,14 @@ const SignInSide: React.FC = () => {
                 />
                 <h4 className="mt-1 mb-5 pb-1">Bias Management System</h4>
               </div>
-
-              <p>Please login to your account</p>
-
+              {error && (
+                <div
+                  className="text-danger text-center mb-3"
+                  style={{ fontWeight: "bold" }}
+                >
+                  {error}
+                </div>
+              )}
               <MDBInput
                 wrapperClass="mb-4"
                 label="Username"
