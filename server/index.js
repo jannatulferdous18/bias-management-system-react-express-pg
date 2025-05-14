@@ -853,10 +853,6 @@ app.get("/api/biases/:id", async (req, res) => {
   }
 });
 
-app.listen(4000, () => {
-  console.log("Server running on http://localhost:4000");
-});
-
 app.get("/admin/pending-bias/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -901,4 +897,8 @@ app.get("/admin/pending-bias/:id", async (req, res) => {
     console.error("Error fetching pending bias by ID:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
+});
+
+app.listen(process.env.PORT || 4000, () => {
+  console.log("Server running");
 });
