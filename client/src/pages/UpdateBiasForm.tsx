@@ -113,7 +113,7 @@ const UpdateBiasForm: React.FC<Props> = ({ bias, onCancel, onUpdated }) => {
   const handleUpdate = async () => {
     try {
       const res = await fetch(
-        `http://localhost:4000/admin/biases/${bias.bias_id}`,
+        `${process.env.REACT_APP_API_URL}/admin/biases/${bias.bias_id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

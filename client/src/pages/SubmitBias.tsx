@@ -37,7 +37,7 @@ const SubmitBias: React.FC = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:4000/api/biases", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/biases`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

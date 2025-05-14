@@ -42,7 +42,9 @@ const AdminBiasDetail: React.FC = () => {
   useEffect(() => {
     const fetchBiasDetail = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/biases/${id}`);
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/biases/${id}`
+        );
         const data = await res.json();
         if (data.success) {
           setBias(data.bias);

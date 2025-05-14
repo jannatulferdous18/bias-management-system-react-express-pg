@@ -39,7 +39,9 @@ const SearchBias: React.FC = () => {
     const fetchBiases = async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/api/biases?search=${encodeURIComponent(
+          `${
+            process.env.REACT_APP_API_URL
+          }/api/biases?search=${encodeURIComponent(
             searchTerm
           )}&severity=${encodeURIComponent(
             severityFilter
@@ -63,7 +65,9 @@ const SearchBias: React.FC = () => {
 
   useEffect(() => {
     const fetchBiasTypes = async () => {
-      const response = await fetch("http://localhost:4000/api/bias-types");
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/bias-types`
+      );
       const data = await response.json();
       if (data.success) {
         setBiasTypes(data.types);

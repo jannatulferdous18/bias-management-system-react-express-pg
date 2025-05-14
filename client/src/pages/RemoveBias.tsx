@@ -54,7 +54,9 @@ const RemoveBias: React.FC = () => {
   const fetchBiases = async () => {
     try {
       const res = await fetch(
-        `http://localhost:4000/api/biases?search=${encodeURIComponent(
+        `${
+          process.env.REACT_APP_API_URL
+        }/api/biases?search=${encodeURIComponent(
           searchTerm
         )}&severity=${encodeURIComponent(
           severityFilter
@@ -79,7 +81,9 @@ const RemoveBias: React.FC = () => {
   useEffect(() => {
     const fetchTypes = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/bias-types");
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/bias-types`
+        );
         const data = await res.json();
         if (data.success) {
           setBiasTypes(data.types);
@@ -93,12 +97,15 @@ const RemoveBias: React.FC = () => {
 
   const deleteBias = async (biasId: number) => {
     try {
-      const res = await fetch(`http://localhost:4000/admin/biases/${biasId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/admin/biases/${biasId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await res.json();
       if (data.success) {

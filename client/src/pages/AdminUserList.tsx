@@ -29,7 +29,7 @@ const AdminUserList: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/users");
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users`);
         const data = await res.json();
         if (data.success) {
           setUsers(data.users);

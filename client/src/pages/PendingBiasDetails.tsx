@@ -48,7 +48,7 @@ const PendingBiasDetail: React.FC = () => {
     const fetchBiasDetail = async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/admin/pending-bias/${id}`
+          `${process.env.REACT_APP_API_URL}/admin/pending-bias/${id}`
         );
         const data = await res.json();
         if (data.success) {
@@ -64,7 +64,7 @@ const PendingBiasDetail: React.FC = () => {
   }, [id]);
 
   const handleAction = async (action: "approve" | "decline") => {
-    const endpoint = `http://localhost:4000/admin/${action}-bias`;
+    const endpoint = `${process.env.REACT_APP_API_URL}/admin/${action}-bias`;
     try {
       const res = await fetch(endpoint, {
         method: "POST",

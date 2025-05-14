@@ -33,7 +33,9 @@ const AdminSearchBias: React.FC = () => {
     const fetchBiases = async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/api/biases?search=${encodeURIComponent(
+          `${
+            process.env.REACT_APP_API_URL
+          }/api/biases?search=${encodeURIComponent(
             searchTerm
           )}&severity=${encodeURIComponent(
             severityFilter
@@ -58,7 +60,9 @@ const AdminSearchBias: React.FC = () => {
   useEffect(() => {
     const fetchTypes = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/bias-types");
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/bias-types`
+        );
         const data = await res.json();
         if (data.success) {
           setBiasTypes(data.types);

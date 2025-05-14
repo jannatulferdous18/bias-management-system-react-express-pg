@@ -29,7 +29,9 @@ const AdminRequests: React.FC = () => {
 
   const fetchPendingBiases = async () => {
     try {
-      const res = await fetch("http://localhost:4000/admin/pending-biases");
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/admin/pending-biases`
+      );
       const data = await res.json();
       if (data.success) {
         setPendingBiases(data.biases);

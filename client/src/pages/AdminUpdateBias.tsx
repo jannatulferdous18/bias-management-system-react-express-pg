@@ -39,6 +39,7 @@ interface Bias {
   technique: string;
   bias_identification: string;
   created_at: string;
+  reference: string;
 }
 const AdminUpdateBias: React.FC = () => {
   const { id } = useParams();
@@ -60,7 +61,9 @@ const AdminUpdateBias: React.FC = () => {
   const fetchBiases = async () => {
     try {
       const res = await fetch(
-        `http://localhost:4000/api/biases?search=${encodeURIComponent(
+        `${
+          process.env.REACT_APP_API_URL
+        }/api/biases?search=${encodeURIComponent(
           searchTerm
         )}&severity=${encodeURIComponent(
           severityFilter
@@ -84,7 +87,9 @@ const AdminUpdateBias: React.FC = () => {
   useEffect(() => {
     const fetchTypes = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/bias-types");
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/bias-types`
+        );
         const data = await res.json();
         if (data.success) {
           setBiasTypes(data.types);
@@ -100,7 +105,9 @@ const AdminUpdateBias: React.FC = () => {
     if (id) {
       const fetchBiasById = async () => {
         try {
-          const res = await fetch(`http://localhost:4000/api/biases/${id}`);
+          const res = await fetch(
+            `${process.env.REACT_APP_API_URL}/api/biases/${id}`
+          );
           const data = await res.json();
           if (data.success) {
             const transformedBias = {
