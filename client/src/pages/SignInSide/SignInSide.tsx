@@ -12,6 +12,7 @@ import api from "../../api/axios.ts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.tsx";
 import PageLayout from "../../layouts/PageLayout.tsx";
+import { supabase } from "../../supabaseClient.js";
 
 const SignInSide: React.FC = () => {
   const [user_name, setuser_name] = useState("");
@@ -20,34 +21,22 @@ const SignInSide: React.FC = () => {
   const { setAuthUser } = useAuth();
 
   const navigate = useNavigate();
+
   const handleLogin = async () => {
-    try {
-      const res = await api.post("/login", {
-        user_name,
-        password,
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: user_name,
+      password,
+    });
+
+    if (error) {
+      setError("Login failed: " + error.message);
+    } else {
+      setAuthUser({
+        user_id: data.user?.id ?? "", // fallback if somehow null
+        user_name: data.user?.email ?? "", // fallback if undefined
       });
 
-      if (res.data.success) {
-        const user = res.data.user || res.data.users;
-        setAuthUser({ user_name: user.user_name, user_id: user.user_id });
-        navigate(user.user_name === "admin" ? "/admin" : "/user");
-      } else {
-        const msg = res.data.message?.toLowerCase();
-        if (msg === "invalid credentials") {
-          setError("Password wrong, try again.");
-        } else {
-          setError(res.data.message || "Login failed.");
-        }
-      }
-    } catch (err: any) {
-      const status = err.response?.status;
-      const msg = err.response?.data?.message;
-
-      if (status === 401 && msg === "Invalid credentials") {
-        setError("Password wrong, try again.");
-      } else {
-        setError(msg || "Server error. Try again.");
-      }
+      navigate(user_name === "admin@example.com" ? "/admin" : "/user");
     }
   };
 
