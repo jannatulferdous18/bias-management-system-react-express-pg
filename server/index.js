@@ -4,6 +4,7 @@ const cors = require("cors");
 // const pg = require("pg");
 const supabase = require("./supabaseClient.js");
 const bcrypt = require("bcrypt");
+const router = express.Router();
 
 dotenv.config();
 const app = express();
@@ -20,8 +21,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 let biases = [];
-
-const router = express.Router();
 
 router.post("/login", async (req, res) => {
   const { user_name, password } = req.body;

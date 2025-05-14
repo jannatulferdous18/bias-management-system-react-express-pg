@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'http://localhost:4000', // 🔁 Change to your backend base URL
+  baseURL: "https://bias-backend-g6d6.onrender.com", // 🔁 Change to your backend base URL
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: false, // set to true if using cookies
 });
