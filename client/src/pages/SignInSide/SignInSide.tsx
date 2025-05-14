@@ -12,7 +12,6 @@ import api from "../../api/axios.ts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.tsx";
 import PageLayout from "../../layouts/PageLayout.tsx";
-import { supabase } from "../../supabaseClient.js";
 
 const SignInSide: React.FC = () => {
   const [user_name, setuser_name] = useState("");
