@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import pg from "pg";
+// import pg from "pg";
 import supabase from "./supabaseClient";
 import bcrypt from "bcrypt";
 
@@ -14,8 +14,8 @@ const app = express();
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-}); */
-db.connect();
+}); 
+db.connect();*/
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));

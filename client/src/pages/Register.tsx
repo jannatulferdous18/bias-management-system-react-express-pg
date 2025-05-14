@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import PageLayout from "../layouts/PageLayout.tsx";
 import backgroundImage from "../assets/background_img.jpg";
+import { supabase } from "../supabaseClient";
 
 const Register: React.FC = () => {
   const [user_name, setUserName] = useState("");
@@ -21,7 +22,7 @@ const Register: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleRegister = async () => {
+  /* const handleRegister = async () => {
     try {
       const res = await axios.post("/register", {
         user_name,
@@ -43,6 +44,30 @@ const Register: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.message || "Something went wrong");
+      setMessage("");
+    }
+  }; */
+
+  const handleRegister = async () => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: user_name, // if using email
+        password,
+      });
+
+      if (error) {
+        setError(error.message);
+        setMessage("");
+      } else {
+        setMessage("Registration successful! Please check your email.");
+        setError("");
+        setUserName("");
+        setPassword("");
+        setTimeout(() => navigate("/"), 1500);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError("Something went wrong");
       setMessage("");
     }
   };
@@ -70,7 +95,7 @@ const Register: React.FC = () => {
                   </MDBCardTitle>
                   <MDBInput
                     className="mb-4"
-                    label="Username"
+                    label="Email"
                     value={user_name}
                     onChange={(e) => setUserName(e.target.value)}
                   />
