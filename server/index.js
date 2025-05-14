@@ -4,7 +4,6 @@ const cors = require("cors");
 // const pg = require("pg");
 const supabase = require("./supabaseClient.js");
 const bcrypt = require("bcrypt");
-const router = express.Router();
 
 dotenv.config();
 const app = express();
@@ -22,9 +21,8 @@ app.use(express.json());
 app.use(express.static("public"));
 let biases = [];
 
-router.post("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   const { user_name, password } = req.body;
-
   try {
     // Query user from custom "users" table with matching username and password
     const { data: users, error } = await supabase
