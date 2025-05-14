@@ -2,17 +2,11 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import pg from "pg";
+import supabase from "./supabaseClient.js";
 
 dotenv.config();
 const app = express();
 
-const db = new pg.Client({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-});
 db.connect();
 app.use(cors());
 app.use(express.json());
@@ -21,20 +15,25 @@ let biases = [];
 
 app.post("/login", async (req, res) => {
   const { user_name, password } = req.body;
-  try {
-    const result = await db.query(
-      "SELECT * FROM users WHERE user_name = $1 AND password = $2",
-      [user_name, password]
-    );
-    if (result.rows.length > 0) {
-      res.json({ success: true, users: result.rows[0] });
-    } else {
-      res.status(401).json({ success: false, message: "Invalid credentials" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("user_name", user_name)
+    .eq("password", password);
+
+  if (error) {
+    console.error("Supabase error:", error);
+    return res.status(500).json({ success: false, message: "Database error" });
   }
+
+  if (data.length === 0) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid credentials" });
+  }
+
+  res.json({ success: true, users: data[0] });
 });
 
 app.post("/register", async (req, res) => {
