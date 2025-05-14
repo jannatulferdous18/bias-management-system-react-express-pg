@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "../api/axios.ts";
 import {
   MDBContainer,
   MDBInput,
@@ -13,7 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import PageLayout from "../layouts/PageLayout.tsx";
 import backgroundImage from "../assets/background_img.jpg";
-import { supabase } from "../supabaseClient";
+import api from "../api/axios.ts";
 
 const Register: React.FC = () => {
   const [user_name, setUserName] = useState("");
@@ -22,9 +21,9 @@ const Register: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  /* const handleRegister = async () => {
+  const handleRegister = async () => {
     try {
-      const res = await axios.post("/register", {
+      const res = await api.post("/register", {
         user_name,
         password,
       });
@@ -44,30 +43,6 @@ const Register: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.message || "Something went wrong");
-      setMessage("");
-    }
-  }; */
-
-  const handleRegister = async () => {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: user_name, // if using email
-        password,
-      });
-
-      if (error) {
-        setError(error.message);
-        setMessage("");
-      } else {
-        setMessage("Registration successful! Please check your email.");
-        setError("");
-        setUserName("");
-        setPassword("");
-        setTimeout(() => navigate("/"), 1500);
-      }
-    } catch (err: any) {
-      console.error(err);
-      setError("Something went wrong");
       setMessage("");
     }
   };
