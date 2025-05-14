@@ -23,9 +23,9 @@ let biases = [];
 
 app.post("/login", async (req, res) => {
   const { user_name, password } = req.body;
+  console.log("Attempting login for:", user_name);
 
   try {
-    // Step 1: Fetch user by username
     const { data: users, error } = await supabase
       .from("users")
       .select("*")
@@ -33,22 +33,24 @@ app.post("/login", async (req, res) => {
       .limit(1);
 
     if (error) {
-      console.error("Error querying Supabase:", error);
+      console.error("Supabase query error:", error);
       return res
         .status(500)
         .json({ success: false, message: "Database error" });
     }
 
-    if (users.length === 0) {
+    if (!users || users.length === 0) {
+      console.log("No user found");
       return res
         .status(401)
         .json({ success: false, message: "Invalid credentials" });
     }
 
     const user = users[0];
+    console.log("User found:", user);
 
-    // Step 2: Compare hashed password
     const match = await bcrypt.compare(password, user.password);
+    console.log("Password match:", match);
 
     if (!match) {
       return res
@@ -56,13 +58,11 @@ app.post("/login", async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    // Optionally remove password before returning user object
     delete user.password;
-
-    res.json({ success: true, user });
+    return res.json({ success: true, user });
   } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Unexpected error in login:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
