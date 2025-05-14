@@ -1,22 +1,41 @@
-.gradient-custom-2 {
-  /* fallback for old browsers */
-  background: #54b4d3;
-
-  /* Chrome 10-25, Safari 5.1-6 */
-  background: #54b4d3;
-
-  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background: #54b4d3;
+.gradient-form {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
 }
 
-@media (min-width: 768px) {
-  .gradient-form {
-    height: 100vh !important;
-  }
+.login-box {
+  width: 100%;
+  max-width: 900px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
-@media (min-width: 769px) {
-  .gradient-custom-2 {
-    border-top-right-radius: 0.3rem;
-    border-bottom-right-radius: 0.3rem;
-  }
+
+.login-left {
+  padding: 3rem 2rem;
+}
+
+.login-right {
+  background: #54b4d3;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.login-right h4 {
+  font-weight: 600;
+}
+
+.login-right p {
+  font-size: 0.9rem;
+}
+
+.text-danger {
+  font-weight: bold;
 }
