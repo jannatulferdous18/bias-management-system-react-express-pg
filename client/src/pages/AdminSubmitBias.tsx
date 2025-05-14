@@ -37,29 +37,32 @@ const AdminSubmitBias: React.FC = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:4000/api/biases/admin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: biasType,
-          name: formData.name,
-          domain: formData.domain,
-          description: formData.description,
-          biasType: formData.biasType,
-          biasIdentification: formData.biasIdentification,
-          severity: formData.severity,
-          mitigationStrategies: formData.mitigationStrategies,
-          submittedBy: user.user_id,
-          version: formData.version,
-          publishedDate: formData.publishedDate,
-          size: formData.size,
-          format: formData.format,
-          biasVersionRange: formData.biasVersionRange,
-          technique: formData.technique,
-          key_characteristic: formData.key_characteristic,
-          reference: formData.reference,
-        }),
-      });
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/biases/admin`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: biasType,
+            name: formData.name,
+            domain: formData.domain,
+            description: formData.description,
+            biasType: formData.biasType,
+            biasIdentification: formData.biasIdentification,
+            severity: formData.severity,
+            mitigationStrategies: formData.mitigationStrategies,
+            submittedBy: user.user_id,
+            version: formData.version,
+            publishedDate: formData.publishedDate,
+            size: formData.size,
+            format: formData.format,
+            biasVersionRange: formData.biasVersionRange,
+            technique: formData.technique,
+            key_characteristic: formData.key_characteristic,
+            reference: formData.reference,
+          }),
+        }
+      );
 
       const result = await res.json();
 
