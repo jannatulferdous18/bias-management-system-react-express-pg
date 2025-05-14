@@ -228,7 +228,7 @@ app.post("/api/biases/admin", async (req, res) => {
   };
 
   try {
-    // ✅ Confirm user exists
+    //  Confirm user exists
     const { data: userData, error: userError } = await supabase
       .from("users")
       .select("user_id")
@@ -242,7 +242,7 @@ app.post("/api/biases/admin", async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // ✅ Check for duplicate
+    //  Check for duplicate
     const { data: duplicates, error: dupError } = await supabase
       .from("biases")
       .select("*")
@@ -259,7 +259,7 @@ app.post("/api/biases/admin", async (req, res) => {
       });
     }
 
-    // ✅ Insert into biases
+    //  Insert into biases
     const { data: biasInsert, error: biasError } = await supabase
       .from("biases")
       .insert([payload])
@@ -270,7 +270,7 @@ app.post("/api/biases/admin", async (req, res) => {
 
     const newBiasId = biasInsert.bias_id;
 
-    // ✅ Insert mitigation strategy
+    //  Insert mitigation strategy
     const { data: strategyInsert, error: stratError } = await supabase
       .from("mitigation_strategy")
       .insert([
@@ -283,7 +283,7 @@ app.post("/api/biases/admin", async (req, res) => {
 
     const newMitigationId = strategyInsert.mitigation_id;
 
-    // ✅ Update biases with mitigation_id
+    //  Update biases with mitigation_id
     const { error: updateError } = await supabase
       .from("biases")
       .update({ mitigation_id: newMitigationId })
@@ -291,7 +291,7 @@ app.post("/api/biases/admin", async (req, res) => {
 
     if (updateError) throw updateError;
 
-    // ✅ Insert into dataset_list or model_list
+    //  Insert into dataset_list or model_list
     if (type === "Dataset") {
       const { error: datasetError } = await supabase
         .from("dataset_list")
@@ -352,7 +352,7 @@ app.get("/api/biases", async (req, res) => {
         bias_type,
         severity,
         mitigation_strategy:mitigation_strategy(strategy_description),
-        submitted_by:users(user_name),
+        submitted_by_user:users(user_name),
         dataset_algorithm_version,
         published_date,
         size,
@@ -363,45 +363,41 @@ app.get("/api/biases", async (req, res) => {
         key_characteristic,
         reference,
         created_at
-      `
+        `
       )
       .order("bias_id", { ascending: false });
 
-    // Search across multiple text fields
+    //  Search within base table only
     if (search) {
       query = query.or(
         `
         name.ilike.%${search}%,
         domain.ilike.%${search}%,
         description.ilike.%${search}%,
-        bias_type.ilike.%${search}%,
-        users.user_name.ilike.%${search}%
+        bias_type.ilike.%${search}%
         `
       );
     }
 
-    if (severity) {
-      query = query.eq("severity", severity);
+    //  Add user name filter separately if needed
+    if (search) {
+      // You'll need to filter this on the frontend instead
+      // Or switch to a Postgres RPC if you want to handle joined search on the DB side
     }
 
-    if (biasType) {
-      query = query.eq("bias_type", biasType);
-    }
-
-    if (componentType) {
-      query = query.eq("type", componentType);
-    }
+    if (severity) query = query.eq("severity", severity);
+    if (biasType) query = query.eq("bias_type", biasType);
+    if (componentType) query = query.eq("type", componentType);
 
     const { data, error } = await query;
 
     if (error) throw error;
 
-    // Flatten joined data
     const formatted = data.map((bias) => ({
       ...bias,
       mitigation_strategy:
         bias.mitigation_strategy?.strategy_description || null,
-      submitted_by: bias.submitted_by?.user_name || null,
+      submitted_by: bias.submitted_by_user?.user_name || null,
     }));
 
     res.json({ success: true, biases: formatted });
