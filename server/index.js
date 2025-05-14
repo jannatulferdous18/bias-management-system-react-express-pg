@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 // const pg = require("pg");
-const supabase = require("./supabaseClient.cjs");
+const supabase = require("./supabaseClient.js");
 const bcrypt = require("bcrypt");
 
 dotenv.config();
@@ -57,8 +57,6 @@ router.post("/login", async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 });
-
-export default router;
 
 app.post("/register", async (req, res) => {
   const { user_name, password } = req.body;
