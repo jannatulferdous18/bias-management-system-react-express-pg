@@ -4,6 +4,7 @@ import cors from "cors";
 // import pg from "pg";
 import supabase from "./supabaseClient";
 import bcrypt from "bcrypt";
+import express from "express";
 
 dotenv.config();
 const app = express();
@@ -21,15 +22,18 @@ app.use(express.json());
 app.use(express.static("public"));
 let biases = [];
 
-app.post("/login", async (req, res) => {
+const router = express.Router();
+
+router.post("/login", async (req, res) => {
   const { user_name, password } = req.body;
-  console.log("Attempting login for:", user_name);
 
   try {
+    // Query user from custom "users" table with matching username and password
     const { data: users, error } = await supabase
       .from("users")
       .select("*")
       .eq("user_name", user_name)
+      .eq("password", password)
       .limit(1);
 
     if (error) {
@@ -40,31 +44,22 @@ app.post("/login", async (req, res) => {
     }
 
     if (!users || users.length === 0) {
-      console.log("No user found");
       return res
         .status(401)
         .json({ success: false, message: "Invalid credentials" });
     }
 
     const user = users[0];
-    console.log("User found:", user);
-
-    const match = await bcrypt.compare(password, user.password);
-    console.log("Password match:", match);
-
-    if (!match) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Invalid credentials" });
-    }
-
     delete user.password;
+
     return res.json({ success: true, user });
   } catch (err) {
-    console.error("Unexpected error in login:", err);
+    console.error("Unexpected login error:", err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+export default router;
 
 app.post("/register", async (req, res) => {
   const { user_name, password } = req.body;
@@ -103,7 +98,7 @@ app.post("/register", async (req, res) => {
     const { error: insertError } = await supabase.from("users").insert([
       {
         user_name,
-        password: hashedPassword,
+        password,
       },
     ]);
 

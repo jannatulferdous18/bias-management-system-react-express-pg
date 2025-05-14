@@ -23,21 +23,26 @@ const SignInSide: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: user_name,
-      password,
-    });
-
-    if (error) {
-      console.error("Supabase login error:", error);
-      setError("Login failed: " + error.message);
-    } else {
-      setAuthUser({
-        user_id: data.user?.id ?? "", // fallback if somehow null
-        user_name: data.user?.email ?? "", // fallback if undefined
+    try {
+      const res = await api.post("/login", {
+        user_name,
+        password,
       });
 
-      navigate(user_name === "admin@example.com" ? "/admin" : "/user");
+      if (res.data.success) {
+        const user = res.data.user;
+        setAuthUser({
+          user_id: user.user_id || user.id, // adjust based on your DB
+          user_name: user.user_name,
+        });
+
+        navigate(user.user_name === "admin" ? "/admin" : "/user");
+      } else {
+        setError(res.data.message || "Login failed");
+      }
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.response?.data?.message || "Server error. Try again.");
     }
   };
 
