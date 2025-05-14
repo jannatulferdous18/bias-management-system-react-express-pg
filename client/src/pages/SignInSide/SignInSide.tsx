@@ -32,7 +32,7 @@ const SignInSide: React.FC = () => {
       if (res.data.success) {
         const user = res.data.user;
         setAuthUser({
-          user_id: user.user_id || user.id, // adjust based on your DB
+          user_id: user.user_id || user.id,
           user_name: user.user_name,
         });
 

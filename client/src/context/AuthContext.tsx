@@ -2,8 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthUser {
   user_name: string;
-  // user_id: number;
-  user_id: string;
+  user_id: number;
+  //user_id: string;
 }
 
 interface AuthContextType {
