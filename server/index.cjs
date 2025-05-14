@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 // const pg = require("pg");
-const supabase = require("./supabaseClient");
+const supabase = require("./supabaseClient.cjs");
 const bcrypt = require("bcrypt");
 
 dotenv.config();
