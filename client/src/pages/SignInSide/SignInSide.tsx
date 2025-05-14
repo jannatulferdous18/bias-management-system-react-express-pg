@@ -29,6 +29,7 @@ const SignInSide: React.FC = () => {
     });
 
     if (error) {
+      console.error("Supabase login error:", error);
       setError("Login failed: " + error.message);
     } else {
       setAuthUser({
