@@ -1,10 +1,9 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-// import pg from "pg";
-import supabase from "./supabaseClient";
-import bcrypt from "bcrypt";
-import express from "express";
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+// const pg = require("pg");
+const supabase = require("./supabaseClient");
+const bcrypt = require("bcrypt");
 
 dotenv.config();
 const app = express();
