@@ -369,11 +369,8 @@ app.get("/api/biases", async (req, res) => {
 
     if (search) {
       query = query.or(
-        `
-        name.ilike.%${search}%,
-        domain.ilike.%${search}%,
-        description.ilike.%${search}%,
-        bias_type.ilike.%${search}%`
+        `name.ilike.%${search}%,domain.ilike.%${search}%,description.ilike.%${search}%,bias_type.ilike.%${search}%`,
+        { foreignTable: undefined }
       );
     }
 
@@ -384,6 +381,10 @@ app.get("/api/biases", async (req, res) => {
     const { data, error } = await query;
 
     if (error) throw error;
+    if (!data.success) {
+      console.warn("Server failed to return results");
+      setBiases([]);
+    }
 
     const formatted = data.map((bias) => ({
       ...bias,
