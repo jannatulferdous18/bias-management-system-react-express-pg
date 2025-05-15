@@ -352,7 +352,7 @@ app.get("/api/biases", async (req, res) => {
         bias_type,
         severity,
         mitigation_strategy:mitigation_strategy!fk_biases_mitigation(strategy_description),
-        submitted_by_user:users(user_name),
+        submitted_by_user:users!fk_biases_submitted_by(user_name),
         dataset_algorithm_version,
         published_date,
         size,
@@ -363,7 +363,7 @@ app.get("/api/biases", async (req, res) => {
         key_characteristic,
         reference,
         created_at
-`
+      `
       )
 
       .order("bias_id", { ascending: false });
