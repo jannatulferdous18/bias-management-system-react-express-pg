@@ -838,7 +838,8 @@ app.get("/api/biases/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const { data, error } = await supabase
+    // 1. Fetch bias details
+    const { data: biasData, error: biasError } = await supabase
       .from("biases")
       .select(
         `
@@ -867,21 +868,35 @@ app.get("/api/biases/:id", async (req, res) => {
       .eq("bias_id", id)
       .maybeSingle();
 
-    if (error) throw error;
-
-    if (!data) {
+    if (biasError) throw biasError;
+    if (!biasData) {
       return res
         .status(404)
         .json({ success: false, message: "Bias not found" });
     }
 
+    // 2. Fetch total occurrence_count
+    const { data: occurrenceData, error: occurrenceError } = await supabase
+      .from("bias_occurrences")
+      .select("occurrence_count")
+      .eq("bias_id", id);
+
+    if (occurrenceError) throw occurrenceError;
+
+    const totalOccurrenceCount = occurrenceData?.reduce(
+      (sum, item) => sum + (item.occurrence_count || 0),
+      0
+    );
+
+    // 3. Respond with merged result
     res.json({
       success: true,
       bias: {
-        ...data,
+        ...biasData,
         mitigation_strategies:
-          data.mitigation_strategy?.strategy_description || null,
-        submitted_by_name: data.submitted_by_user?.user_name || null,
+          biasData.mitigation_strategy?.strategy_description || null,
+        submitted_by_name: biasData.submitted_by_user?.user_name || null,
+        occurrence_count: totalOccurrenceCount || 0,
       },
     });
   } catch (err) {

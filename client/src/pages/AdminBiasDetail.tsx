@@ -13,6 +13,7 @@ import { useAuth } from "../context/AuthContext.tsx";
 import AdminNavBar from "../components/AdminNavBar.tsx";
 
 interface BiasDetailData {
+  occurrence_count: number;
   bias_id: number;
   type: string;
   name: string;
@@ -89,9 +90,14 @@ const AdminBiasDetail: React.FC = () => {
                   <br />
                 </>
               )}
-              <strong>Severity:</strong>
+              <strong>Severity: </strong>
               <MDBBadge color={severityColor}>{bias.severity}</MDBBadge> <br />
               <strong>Reference:</strong> {bias.reference} <br />
+              <strong>Occurrence Count: </strong>
+              <MDBBadge color="danger" pill>
+                {bias.occurrence_count}
+              </MDBBadge>{" "}
+              <br />
             </div>
           </MDBCol>
 
