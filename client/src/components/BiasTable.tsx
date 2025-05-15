@@ -14,7 +14,6 @@ export interface Bias {
   type: string;
   domain: string;
   dataset_algorithm_version?: string;
-  occurrence_count: number;
 }
 
 interface BiasTableProps {
@@ -39,7 +38,6 @@ const BiasTable: React.FC<BiasTableProps> = ({ biases, onRowClick }) => {
           <th>Severity</th>
           <th>Affected Component</th>
           <th>Domain</th>
-          <th>Occurrence Count</th>
         </tr>
       </MDBTableHead>
 
@@ -69,11 +67,6 @@ const BiasTable: React.FC<BiasTableProps> = ({ biases, onRowClick }) => {
             </td>
             <td>{bias.type}</td>
             <td>{bias.domain}</td>
-            <td>
-              <MDBBadge color={"danger"} pill>
-                {bias.occurrence_count}
-              </MDBBadge>
-            </td>
           </tr>
         ))}
       </MDBTableBody>
