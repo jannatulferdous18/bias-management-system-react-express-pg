@@ -365,25 +365,16 @@ app.get("/api/biases", async (req, res) => {
         created_at
       `
       )
-
       .order("bias_id", { ascending: false });
 
-    //  Search within base table only
     if (search) {
       query = query.or(
         `
         name.ilike.%${search}%,
         domain.ilike.%${search}%,
         description.ilike.%${search}%,
-        bias_type.ilike.%${search}%
-        `
+        bias_type.ilike.%${search}%`
       );
-    }
-
-    //  Add user name filter separately if needed
-    if (search) {
-      // You'll need to filter this on the frontend instead
-      // Or switch to a Postgres RPC if you want to handle joined search on the DB side
     }
 
     if (severity) query = query.eq("severity", severity);
@@ -404,7 +395,6 @@ app.get("/api/biases", async (req, res) => {
     res.json({ success: true, biases: formatted });
   } catch (err) {
     console.error("Error in /api/biases:", err);
-
     res.status(500).json({ success: false, message: "Failed to fetch biases" });
   }
 });
