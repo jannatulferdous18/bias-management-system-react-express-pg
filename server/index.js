@@ -367,10 +367,14 @@ app.get("/api/biases", async (req, res) => {
       )
       .order("bias_id", { ascending: false });
 
-    if (search) {
+    if (search && search.trim() !== "") {
       query = query.or(
-        `name.ilike.%${search}%,domain.ilike.%${search}%,description.ilike.%${search}%,bias_type.ilike.%${search}%`,
-        { foreignTable: undefined }
+        [
+          `name.ilike.%${search}%`,
+          `domain.ilike.%${search}%`,
+          `description.ilike.%${search}%`,
+          `bias_type.ilike.%${search}%`,
+        ].join(",")
       );
     }
 
