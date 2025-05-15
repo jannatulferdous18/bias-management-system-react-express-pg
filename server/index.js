@@ -899,9 +899,10 @@ app.get("/admin/pending-bias/:id", async (req, res) => {
         mitigation_strategies,
         reference,
         created_at,
-        submitted_by_user:users(user_name)
-      `
+        submitted_by_user:users!fk_pending_submitted_by(user_name)
+        `
       )
+
       .eq("request_id", id)
       .maybeSingle();
 
