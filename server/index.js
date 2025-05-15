@@ -351,7 +351,7 @@ app.get("/api/biases", async (req, res) => {
         description,
         bias_type,
         severity,
-        mitigation_strategy:mitigation_strategy(strategy_description),
+        mitigation_strategy:mitigation_strategy!fk_biases_mitigation(strategy_description),
         submitted_by_user:users(user_name),
         dataset_algorithm_version,
         published_date,
@@ -363,8 +363,9 @@ app.get("/api/biases", async (req, res) => {
         key_characteristic,
         reference,
         created_at
-        `
+`
       )
+
       .order("bias_id", { ascending: false });
 
     //  Search within base table only
