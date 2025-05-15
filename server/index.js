@@ -402,7 +402,8 @@ app.get("/api/biases", async (req, res) => {
 
     res.json({ success: true, biases: formatted });
   } catch (err) {
-    console.error("Error in /api/biases:", err.message);
+    console.error("Error in /api/biases:", err);
+
     res.status(500).json({ success: false, message: "Failed to fetch biases" });
   }
 });
