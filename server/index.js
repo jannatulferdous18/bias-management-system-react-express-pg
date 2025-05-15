@@ -554,6 +554,23 @@ app.post("/admin/approve-bias", async (req, res) => {
     res.status(500).json({ success: false, message: "Error approving bias." });
   }
 });
+app.post("/admin/decline-bias", async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    const { error } = await supabase
+      .from("pending_request")
+      .delete()
+      .eq("request_id", id);
+
+    if (error) throw error;
+
+    res.json({ success: true, message: "Bias request declined and removed." });
+  } catch (err) {
+    console.error("Error declining bias:", err.message || err);
+    res.status(500).json({ success: false, message: "Error declining bias." });
+  }
+});
 
 app.get("/api/bias-types", async (req, res) => {
   try {
