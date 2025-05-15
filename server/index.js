@@ -367,6 +367,7 @@ app.get("/api/biases", async (req, res) => {
       )
       .order("bias_id", { ascending: false });
 
+    //  Only run search if input is not blank
     if (search && search.trim() !== "") {
       query = query.or(
         [
@@ -384,10 +385,8 @@ app.get("/api/biases", async (req, res) => {
 
     const { data, error } = await query;
 
-    if (error) throw error;
-    if (!data.success) {
-      console.warn("Server failed to return results");
-      setBiases([]);
+    if (error) {
+      throw error;
     }
 
     const formatted = data.map((bias) => ({
@@ -399,7 +398,7 @@ app.get("/api/biases", async (req, res) => {
 
     res.json({ success: true, biases: formatted });
   } catch (err) {
-    console.error("Error in /api/biases:", err);
+    console.error("Error in /api/biases:", err.message || err);
     res.status(500).json({ success: false, message: "Failed to fetch biases" });
   }
 });
