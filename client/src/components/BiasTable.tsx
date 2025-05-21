@@ -14,7 +14,7 @@ export interface Bias {
   type: string;
   domain: string;
   dataset_algorithm_version?: string;
-  created_id: string;
+  created_at: string;
 }
 
 interface BiasTableProps {
@@ -52,7 +52,7 @@ const BiasTable: React.FC<BiasTableProps> = ({ biases, onRowClick }) => {
           >
             <td>
               {bias.bias_id
-                ? `AIB-${new Date(bias.created_id).getFullYear()}-${String(
+                ? `AIB-${new Date(bias.created_at).getFullYear()}-${String(
                     bias.bias_id
                   ).padStart(4, "0")}`
                 : "—"}
