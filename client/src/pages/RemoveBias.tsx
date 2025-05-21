@@ -194,7 +194,16 @@ const RemoveBias: React.FC = () => {
             <MDBTableBody>
               {currentBiases.map((bias) => (
                 <tr key={bias.bias_id} className="table-row">
-                  <td>{bias.bias_id ? `AIBID${bias.bias_id}` : "—"}</td>
+                  <td>
+                    {bias.bias_id
+                      ? `AIB-${new Date(
+                          bias.created_at
+                        ).getFullYear()}-${String(bias.bias_id).padStart(
+                          4,
+                          "0"
+                        )}`
+                      : "—"}
+                  </td>
                   <td>{bias.bias_type}</td>
                   <td>{bias.domain}</td>
                   <td>
