@@ -1,6 +1,16 @@
 import React, { useState } from "react";
 import "./SignInSide.css";
-import { MDBBtn, MDBContainer, MDBCol, MDBInput } from "mdb-react-ui-kit";
+import {
+  MDBBtn,
+  MDBContainer,
+  MDBRow,
+  MDBCol,
+  MDBInput,
+  MDBSpinner,
+  MDBModal,
+  MDBModalDialog,
+  MDBModalContent,
+} from "mdb-react-ui-kit";
 import wamflowLogo from "../../assets/flowLogo.png";
 import api from "../../api/axios.ts";
 import { useNavigate } from "react-router-dom";
@@ -11,11 +21,13 @@ const SignInSide: React.FC = () => {
   const [user_name, setuser_name] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { setAuthUser } = useAuth();
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    setIsLoading(true);
     try {
       const res = await api.post("/login", {
         user_name,
@@ -23,89 +35,123 @@ const SignInSide: React.FC = () => {
       });
 
       if (res.data.success) {
-        const user = res.data.user;
-        setAuthUser({
-          user_id: user.user_id || user.id,
-          user_name: user.user_name,
-        });
-
-        navigate(user.user_name === "admin" ? "/admin" : "/user");
+        const user = res.data.user || res.data.users;
+        setAuthUser({ user_name: user.user_name, user_id: user.user_id });
+        if (user.user_name === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/user");
+        }
       } else {
         setError(res.data.message || "Login failed");
       }
     } catch (err: any) {
-      console.error("Login error:", err);
+      console.error(err);
       setError(err.response?.data?.message || "Server error. Try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <PageLayout>
-      <MDBContainer className="gradient-form">
-        <div className="login-box d-flex flex-row">
-          <MDBCol md="6" className="login-left">
-            <div className="text-center mb-4">
-              <img
-                src={wamflowLogo}
-                alt="Wamflow Logo"
-                style={{ width: "100px" }}
+      <MDBContainer className="my-5 gradient-form">
+        <MDBRow>
+          <MDBCol col="6" className="mb-5">
+            <div className="d-flex flex-column ms-5">
+              <div className="text-center">
+                <img
+                  src={wamflowLogo}
+                  alt="Wamflow Logo"
+                  style={{ width: "100px" }}
+                />
+                <h4 className="mt-1 mb-5 pb-1">Bias Management System</h4>
+              </div>
+
+              <p>Please login to your account</p>
+
+              <MDBInput
+                wrapperClass="mb-4"
+                label="Username"
+                id="form1"
+                type="text"
+                value={user_name}
+                onChange={(e) => setuser_name(e.target.value)}
               />
-              <h4 className="mt-3">Bias Management System</h4>
-            </div>
 
-            {error && (
-              <div className="text-danger text-center mb-3">{error}</div>
-            )}
+              <MDBInput
+                wrapperClass="mb-4"
+                label="Password"
+                id="form2"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
 
-            <MDBInput
-              wrapperClass="mb-4"
-              label="Username"
-              type="text"
-              value={user_name}
-              onChange={(e) => setuser_name(e.target.value)}
-            />
-            <MDBInput
-              wrapperClass="mb-4"
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+              <div className="text-center pt-1 mb-5 pb-1">
+                <MDBBtn
+                  className="mb-4 w-100 gradient-custom-2"
+                  onClick={handleLogin}
+                  disabled={isLoading}
+                >
+                  Sign in
+                </MDBBtn>
+              </div>
 
-            <div className="text-center">
-              <MDBBtn className="mb-4 w-100" onClick={handleLogin}>
-                Sign in
-              </MDBBtn>
-            </div>
+              {error && <p className="text-danger text-center mb-3">{error}</p>}
 
-            <div className="text-center">
-              <p>Don't have an account?</p>
-              <MDBBtn
-                outline
-                color="info"
-                onClick={() => navigate("/register")}
-              >
-                Register
-              </MDBBtn>
+              <div className="d-flex flex-row align-items-center justify-content-center pb-4 mb-4">
+                <p className="mb-0">Don't have an account?</p>
+                <MDBBtn
+                  outline
+                  className="mx-2"
+                  color="info"
+                  onClick={() => navigate("/register")}
+                >
+                  Register
+                </MDBBtn>
+              </div>
             </div>
           </MDBCol>
 
-          <MDBCol md="6" className="login-right">
-            <div>
-              <h4 className="mb-3">
-                Revolutionize the way you design and implement web-based
-                applications
-              </h4>
-              <p>
-                Graphical notation that provides a UML-like notation
-                specifically tailored to the needs of inter-organizational
-                web-based applications. Empower your team, visualize, design,
-                and collaborate effortlessly, bridging the gap between concept
-                and implementation.
-              </p>
+          <MDBCol col="6" className="mb-5">
+            <div
+              className="d-flex flex-column justify-content-center h-100 mb-4"
+              style={{ background: "#54B4D3" }}
+            >
+              <div className="text-black px-3 py-4 p-md-5 mx-md-4">
+                <h4 className="mb-4">
+                  Revolutionize the way you design and implement web-based
+                  applications
+                </h4>
+                <p className="small mb-0">
+                  Graphical notation that provides a UML-like notation that is
+                  specifically tailored to the needs of inter-organizational
+                  web-based applications. Empower your team, visualize, design,
+                  and collaborate effortlessly, bridging the gap between concept
+                  and implementation.
+                </p>
+              </div>
             </div>
           </MDBCol>
-        </div>
+        </MDBRow>
+
+        {/* Loading Modal */}
+        <MDBModal
+          staticBackdrop
+          tabIndex="-1"
+          show={isLoading}
+          setShow={() => {}}
+        >
+          <MDBModalDialog centered>
+            <MDBModalContent className="text-center p-4">
+              <MDBSpinner color="primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </MDBSpinner>
+              <div className="mt-3">Signing in...</div>
+            </MDBModalContent>
+          </MDBModalDialog>
+        </MDBModal>
       </MDBContainer>
     </PageLayout>
   );
