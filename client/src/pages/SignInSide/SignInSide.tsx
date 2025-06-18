@@ -28,20 +28,14 @@ const SignInSide: React.FC = () => {
 
   const handleLogin = async () => {
     setIsLoading(true);
+    setError("");
     try {
-      const res = await api.post("/login", {
-        user_name,
-        password,
-      });
+      const res = await api.post("/login", { user_name, password });
 
       if (res.data.success) {
         const user = res.data.user || res.data.users;
         setAuthUser({ user_name: user.user_name, user_id: user.user_id });
-        if (user.user_name === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/user");
-        }
+        navigate(user.user_name === "admin" ? "/admin" : "/user");
       } else {
         setError(res.data.message || "Login failed");
       }
@@ -153,6 +147,19 @@ const SignInSide: React.FC = () => {
           </MDBModalDialog>
         </MDBModal>
       </MDBContainer>
+      <MDBModal
+        show={isLoading}
+        staticBackdrop
+        tabIndex="-1"
+        setShow={() => {}}
+      >
+        <MDBModalDialog centered>
+          <MDBModalContent className="text-center p-4">
+            <MDBSpinner role="status" />
+            <p className="mt-3 mb-0">Signing in...</p>
+          </MDBModalContent>
+        </MDBModalDialog>
+      </MDBModal>
     </PageLayout>
   );
 };
