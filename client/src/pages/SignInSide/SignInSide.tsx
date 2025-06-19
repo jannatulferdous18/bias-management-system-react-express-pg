@@ -16,6 +16,7 @@ import api from "../../api/axios.ts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.tsx";
 import PageLayout from "../../layouts/PageLayout.tsx";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const SignInSide: React.FC = () => {
   const [user_name, setuser_name] = useState("");
@@ -130,36 +131,33 @@ const SignInSide: React.FC = () => {
           </MDBCol>
         </MDBRow>
 
-        {/* Loading Modal */}
-        <MDBModal
-          staticBackdrop
-          tabIndex="-1"
-          show={isLoading}
-          setShow={() => {}}
-        >
-          <MDBModalDialog centered>
-            <MDBModalContent className="text-center p-4">
-              <MDBSpinner color="primary" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </MDBSpinner>
-              <div className="mt-3">Signing in...</div>
-            </MDBModalContent>
-          </MDBModalDialog>
-        </MDBModal>
+        {isLoading && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              zIndex: 1050,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <MDBSpinner
+              style={{ width: "3rem", height: "3rem" }}
+              role="status"
+              color="primary"
+            >
+              <span className="visually-hidden">Loading...</span>
+            </MDBSpinner>
+            <p className="mt-3 mb-0 fw-bold text-dark">Signing in...</p>
+          </div>
+        )}
       </MDBContainer>
-      <MDBModal
-        show={isLoading}
-        staticBackdrop
-        tabIndex="-1"
-        setShow={() => {}}
-      >
-        <MDBModalDialog centered>
-          <MDBModalContent className="text-center p-4">
-            <MDBSpinner role="status" />
-            <p className="mt-3 mb-0">Signing in...</p>
-          </MDBModalContent>
-        </MDBModalDialog>
-      </MDBModal>
     </PageLayout>
   );
 };
