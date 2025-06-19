@@ -50,6 +50,18 @@ const SignInSide: React.FC = () => {
 
   return (
     <>
+      {isLoading && (
+        <div className="fullscreen-loader">
+          <MDBSpinner
+            style={{ width: "3rem", height: "3rem" }}
+            role="status"
+            color="primary"
+          >
+            <span className="visually-hidden">Loading...</span>
+          </MDBSpinner>
+          <p className="mt-3 mb-0 fw-bold text-dark">Signing in...</p>
+        </div>
+      )}
       <PageLayout>
         <MDBContainer className="my-5 gradient-form">
           <MDBRow>
@@ -135,18 +147,6 @@ const SignInSide: React.FC = () => {
           </MDBRow>
         </MDBContainer>
       </PageLayout>
-      {isLoading && (
-        <div className="fullscreen-loader">
-          <MDBSpinner
-            style={{ width: "3rem", height: "3rem" }}
-            role="status"
-            color="primary"
-          >
-            <span className="visually-hidden">Loading...</span>
-          </MDBSpinner>
-          <p className="mt-3 mb-0 fw-bold text-dark">Signing in...</p>
-        </div>
-      )}
     </>
   );
 };
