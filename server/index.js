@@ -784,47 +784,83 @@ app.delete("/admin/biases/:id", async (req, res) => {
   const biasId = req.params.id;
 
   try {
-    // Step 1: Fetch mitigation_id
-    const { data: biasData, error: biasError } = await supabase
+    // Step 1: Confirm bias exists
+    const { data: bias, error: biasFetchError } = await supabase
       .from("biases")
-      .select("mitigation_id")
+      .select("bias_id, mitigation_id")
       .eq("bias_id", biasId)
-      .single();
+      .maybeSingle();
 
-    if (biasError?.code === "PGRST116") {
-      return res
-        .status(404)
-        .json({ success: false, message: "Bias not found" });
+    if (biasFetchError) {
+      console.error("Error fetching bias:", biasFetchError);
+      return res.status(500).json({
+        success: false,
+        message: "Database error while fetching bias",
+        error: biasFetchError.message,
+      });
     }
-    if (biasError) throw biasError;
 
-    const mitigationId = biasData.mitigation_id;
+    if (!bias) {
+      return res.status(404).json({
+        success: false,
+        message: "Bias not found",
+      });
+    }
 
-    // Step 2: Delete mitigation strategy if exists
-    if (mitigationId) {
-      const { error: deleteMitigationError } = await supabase
+    // Step 2: Delete related entries in dataset_list or model_list
+    const { error: dsDeleteError } = await supabase
+      .from("dataset_list")
+      .delete()
+      .eq("bias_id", biasId);
+    if (dsDeleteError) {
+      console.error("Error deleting from dataset_list:", dsDeleteError);
+      throw dsDeleteError;
+    }
+
+    const { error: modelDeleteError } = await supabase
+      .from("model_list")
+      .delete()
+      .eq("bias_id", biasId);
+    if (modelDeleteError) {
+      console.error("Error deleting from model_list:", modelDeleteError);
+      throw modelDeleteError;
+    }
+
+    // Step 3: Delete mitigation strategy (if exists)
+    if (bias.mitigation_id) {
+      const { error: mitDeleteError } = await supabase
         .from("mitigation_strategy")
         .delete()
-        .eq("mitigation_id", mitigationId);
-
-      if (deleteMitigationError) throw deleteMitigationError;
+        .eq("mitigation_id", bias.mitigation_id);
+      if (mitDeleteError) {
+        console.error("Error deleting mitigation strategy:", mitDeleteError);
+        throw mitDeleteError;
+      }
     }
 
-    // Step 3: Delete the bias
-    const { error: deleteBiasError } = await supabase
+    // Step 4: Delete bias record itself
+    const { error: biasDeleteError } = await supabase
       .from("biases")
       .delete()
       .eq("bias_id", biasId);
 
-    if (deleteBiasError) throw deleteBiasError;
+    if (biasDeleteError) {
+      console.error("Error deleting bias:", biasDeleteError);
+      throw biasDeleteError;
+    }
 
+    // Step 5: Success response
     res.json({
       success: true,
-      message: "Bias and mitigation strategy deleted.",
+      message: "Bias and all related records deleted successfully.",
     });
   } catch (err) {
-    console.error("Error deleting bias:", err.message || err);
-    res.status(500).json({ success: false, message: "Deletion failed." });
+    console.error("DELETE /admin/biases/:id failed:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error during deletion.",
+      error: err.message || err,
+    });
   }
 });
 
